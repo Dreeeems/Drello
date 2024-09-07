@@ -87,4 +87,57 @@ class ProjectController extends AbstractController
             ]
         ], 201);
     }
+
+    #[Route('api/project/{id}', name: 'create_project', methods: ['PUT'])]
+    public function update(int $id, Request $request,TeamsRepository $teamsRepository,ProjectsRepository $projectsRepository, EntityManagerInterface $entityManager): Response{
+        $data = $request ->ToArray();
+        $name = $data['name'] ?? null;
+        $teamId = $data['team_id'] ?? null;
+        $project = $projectsRepository->find($id);
+        if(!$project){
+            return $this->json(['error'=> 'Project not found'],404);
+        }
+
+        if ($teamId !== null) {
+            if (!is_numeric($teamId)) {
+                return $this->json(['error' => 'Invalid team ID'], 400);
+            }
+    
+            $team = $teamsRepository->find($teamId);
+    
+            if (!$team) {
+                return $this->json(['error' => 'Team not found'], 404);
+            }
+            $project->setTeam($team);
+    }
+    if($name !==""|| null){
+        $project->setName($name);
+    }
+    $entityManager->flush();
+    return  $this->json([
+        'message' => 'Project updated successfully',
+        'project' => [
+            'id' => $project->getId(),
+            'name' => $project->getName(),
+            'team' => $project->getTeam() ? $project->getTeam()->getName() : null
+        ]
+    ], 200);
+
+    }
+
+    //delete a project
+    #[Route('api/project/{id}', name: 'create_project', methods: ['DELETE'])]
+    public function delete(int $id, Request $request,TeamsRepository $teamsRepository,ProjectsRepository $projectsRepository, EntityManagerInterface $entityManager): Response{
+    $project = $projectsRepository->find($id);
+    if(!$project){
+        return $this->json(['error'=> 'Project not found'],404);
+    }
+    //delete all project tasks
+    foreach($project->getTasks()as $task){
+        $entityManager -> remove($task);
+    }
+    $entityManager->remove($project);
+    $entityManager -> flush();
+    return $this->json(['message'=>'Project delete !'],204);
+}
 }
