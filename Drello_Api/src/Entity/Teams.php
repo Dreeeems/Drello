@@ -30,10 +30,16 @@ class Teams
     #[ORM\OneToMany(targetEntity: Projects::class, mappedBy: 'team')]
     private Collection $projects;
 
+    #[ORM\ManyToMany(targetEntity: User::class)]
+    #[ORM\JoinTable(name: "team_admins")]
+    private Collection $admins;
+
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
         $this->projects = new ArrayCollection();
+        $this->admins = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -103,6 +109,26 @@ class Teams
                 $project->setTeam(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * Get the value of admins
+     */ 
+    public function getAdmins()
+    {
+        return $this->admins;
+    }
+
+    /**
+     * Set the value of admins
+     *
+     * @return  self
+     */ 
+    public function setAdmins($admins)
+    {
+        $this->admins = $admins;
 
         return $this;
     }
