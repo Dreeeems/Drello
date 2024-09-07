@@ -19,7 +19,7 @@ class Projects
     private ?string $name = null;
 
     #[ORM\ManyToOne(inversedBy: 'projects')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Teams $team = null;
 
     /**
