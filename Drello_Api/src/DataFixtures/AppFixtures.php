@@ -11,6 +11,7 @@ use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 use Faker\Generator;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Ramsey\Uuid\Uuid;
 
 class AppFixtures extends Fixture
 {
@@ -30,7 +31,8 @@ class AppFixtures extends Fixture
             $user->setName($this->faker->name())
                 ->setUsername($this->faker->firstName())
                 ->setEmail($this->faker->email())
-                ->setRoles(['ROLE_USER']);
+                ->setRoles(['ROLE_USER'])
+                ->setToken(Uuid::uuid4()->toString());
             $user->setPlainPassword("password");
             $users[] = $user;
             $manager->persist($user);
