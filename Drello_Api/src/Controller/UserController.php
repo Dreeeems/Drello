@@ -80,24 +80,24 @@ class UserController extends AbstractController
         $email = $data['email'] ?? null;
         $password = $data['password'] ?? null;
 
-        // Validation des champs
+
         if (!$email || !$password) {
             return new JsonResponse(['message' => 'Email and password are required'], 400);
         }
 
-        // Recherche de l'utilisateur par email
+
         $user = $userRepository->findOneBy(['email' => $email]);
 
         if (!$user) {
             return new JsonResponse(['message' => 'Invalid credentials'], 401);
         }
 
-        // Vérification du mot de passe
+
         if (!$passwordHasher->isPasswordValid($user, $password)) {
             return new JsonResponse(['message' => 'Invalid credentials'], 401);
         }
 
-        // Si tout est correct, renvoyer l'objet utilisateur (ou des infos limitées pour éviter d'exposer des données sensibles)
+
         return new JsonResponse([
             'message' => 'Login successful',
             'user' => [
@@ -106,7 +106,7 @@ class UserController extends AbstractController
                 'username' => $user->getUsername(),
                 'email' => $user->getEmail(),
                 'key' => $user->getToken()
-                // Tu peux ajouter d'autres champs, mais évite de renvoyer des données sensibles comme le mot de passe
+               
             ]
         ], 200);
     }
