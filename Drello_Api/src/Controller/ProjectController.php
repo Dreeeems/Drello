@@ -45,8 +45,8 @@ class ProjectController extends AbstractController
             $data[] = [
                 'id' => $project->getId(),
                 'title' => $project->getName(),
-                'team' => $teamData,  // Ajoute les données de l'équipe
-                'tasks' => $tasksData, // Ajoute les données des tâches
+                'team' => $teamData,  
+                'tasks' => $tasksData,
             ];
         }
 
