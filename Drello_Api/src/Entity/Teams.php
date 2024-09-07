@@ -34,6 +34,9 @@ class Teams
     #[ORM\JoinTable(name: "team_admins")]
     private Collection $admins;
 
+    #[ORM\ManyToOne(inversedBy: 'created_teams')]
+    private ?User $creator = null;
+
 
     public function __construct()
     {
@@ -129,6 +132,32 @@ class Teams
     public function setAdmins($admins)
     {
         $this->admins = $admins;
+
+        return $this;
+    }
+
+    public function addAdmin(User $user): static
+    {
+        if (!$this->admins->contains($user)) {
+            $this->admins->add($user);
+        }
+        return $this;
+    }
+
+    public function removeAdmin(User $user): static
+    {
+        $this->admins->removeElement($user);
+        return $this;
+    }
+
+    public function getCreator(): ?User
+    {
+        return $this->creator;
+    }
+
+    public function setCreator(?User $creator): static
+    {
+        $this->creator = $creator;
 
         return $this;
     }

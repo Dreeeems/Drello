@@ -62,9 +62,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: Teams::class, mappedBy: 'users')]
     private Collection $teams;
 
+    
+
+    /**
+     * @var Collection<int, Teams>
+     */
+    #[ORM\OneToMany(targetEntity: Teams::class, mappedBy: 'creator')]
+    private Collection $created_teams;
+
+    #[ORM\Column(length: 255)]
+    private ?string $token = null;
+
     public function __construct()
     {
         $this->teams = new ArrayCollection();
+        $this->created_teams = new ArrayCollection();
     }
 
  
@@ -227,6 +239,48 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->teams->removeElement($team)) {
             $team->removeUser($this);
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Teams>
+     */
+    public function getCreatedTeams(): Collection
+    {
+        return $this->created_teams;
+    }
+
+    public function addCreatedTeam(Teams $createdTeam): static
+    {
+        if (!$this->created_teams->contains($createdTeam)) {
+            $this->created_teams->add($createdTeam);
+            $createdTeam->setCreator($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCreatedTeam(Teams $createdTeam): static
+    {
+        if ($this->created_teams->removeElement($createdTeam)) {
+            // set the owning side to null (unless already changed)
+            if ($createdTeam->getCreator() === $this) {
+                $createdTeam->setCreator(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getToken(): ?string
+    {
+        return $this->token;
+    }
+
+    public function setToken(string $token): static
+    {
+        $this->token = $token;
 
         return $this;
     }
